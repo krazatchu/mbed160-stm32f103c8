@@ -38,7 +38,7 @@
  *----------------------------------------------------------------------------*/
 int ethernet_init()
 {
-	  int error;
+      int error;
     error = 0;
 
     if(smsc9220_check_id()) {
@@ -123,7 +123,7 @@ void ethernet_free() {
 
 int ethernet_write(const char *data, int size)
 {
-		return 0;
+        return 0;
 }
 
 int ethernet_send() 
@@ -145,7 +145,7 @@ int ethernet_receive()
 
 int ethernet_read(char *data, int dlen) 
 {
-	return 0;
+    return 0;
 }
 
 void ethernet_address(char *mac) {
@@ -154,11 +154,11 @@ void ethernet_address(char *mac) {
 
 int ethernet_link(void) 
 {
-	return 0;
+    return 0;
 }
 
 void ethernet_set_link(int speed, int duplex)
 {
-	smsc9220_establish_link();
+    smsc9220_establish_link();
 }
 

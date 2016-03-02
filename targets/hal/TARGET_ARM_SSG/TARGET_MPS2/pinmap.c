@@ -19,10 +19,10 @@
 
 
 void pin_function(PinName pin, int function) {
-	    MBED_ASSERT(pin != (PinName)NC);
+        MBED_ASSERT(pin != (PinName)NC);
 
 }
 
 void pin_mode(PinName pin, PinMode mode) {
-	    MBED_ASSERT(pin != (PinName)NC);
+        MBED_ASSERT(pin != (PinName)NC);
 }

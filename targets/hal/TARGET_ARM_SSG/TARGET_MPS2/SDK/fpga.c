@@ -28,8 +28,8 @@
 // Used for I2C drivers
 void i2c_delay(unsigned int tick)
 {
-	unsigned int end;
-	unsigned int start;
+    unsigned int end;
+    unsigned int start;
 
     start = MPS2_FPGAIO->COUNTER;
     end   = start + (tick);
@@ -50,8 +50,8 @@ void i2c_delay(unsigned int tick)
  */
 void Sleepms(unsigned int msec)
 {
-	unsigned int end;
-	unsigned int start;
+    unsigned int end;
+    unsigned int start;
 
     start = MPS2_FPGAIO->COUNTER;
     end   = start + (25 * msec * 1000);
@@ -71,8 +71,8 @@ void Sleepms(unsigned int msec)
  */
 void Sleepus(unsigned int usec)
 {
-	unsigned int end;
-	unsigned int start;
+    unsigned int end;
+    unsigned int start;
 
     start = MPS2_FPGAIO->COUNTER;
     end   = start + (25 * usec);
