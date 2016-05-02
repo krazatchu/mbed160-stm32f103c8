@@ -30,22 +30,10 @@
  */
 #include "cmsis_nvic.h"
 
-#define NVIC_RAM_VECTOR_ADDRESS (0x1FFF0000)  // Vectors positioned at start of RAM
+extern void InstallIRQHandler(IRQn_Type irq, uint32_t irqHandler);
 
 void NVIC_SetVector(IRQn_Type IRQn, uint32_t vector) {
-    uint32_t *vectors = (uint32_t*)SCB->VTOR;
-    uint32_t i;
-
-    // Copy and switch to dynamic vectors if the first time called
-    if (SCB->VTOR < NVIC_RAM_VECTOR_ADDRESS) {
-        uint32_t *old_vectors = vectors;
-        vectors = (uint32_t*)NVIC_RAM_VECTOR_ADDRESS;
-        for (i=0; i<NVIC_NUM_VECTORS; i++) {
-            vectors[i] = old_vectors[i];
-        }
-        SCB->VTOR = (uint32_t)NVIC_RAM_VECTOR_ADDRESS;
-    }
-    vectors[IRQn + 16] = vector;
+    InstallIRQHandler(IRQn, vector);
 }
 
 uint32_t NVIC_GetVector(IRQn_Type IRQn) {
