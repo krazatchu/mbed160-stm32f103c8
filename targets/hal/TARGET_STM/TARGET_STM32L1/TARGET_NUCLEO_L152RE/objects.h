@@ -64,17 +64,6 @@ struct dac_s {
     PinName pin;
 };
 
-struct serial_s {
-    UARTName uart;
-    int index; // Used by irq
-    uint32_t baudrate;
-    uint32_t databits;
-    uint32_t stopbits;
-    uint32_t parity;
-    PinName  pin_tx;
-    PinName  pin_rx;
-};
-
 struct spi_s {
     SPIName spi;
     uint32_t bits;
@@ -94,13 +83,7 @@ struct i2c_s {
     uint32_t slave;
 };
 
-struct pwmout_s {
-    PWMName pwm;
-    PinName pin;
-    uint32_t period;
-    uint32_t pulse;
-};
-
+#include "common_objects.h"
 #include "gpio_object.h"
 
 #ifdef __cplusplus
