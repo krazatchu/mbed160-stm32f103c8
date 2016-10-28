@@ -1,3 +1,6 @@
+
+/** \addtogroup hal */
+/** @{*/
 /* mbed Microcontroller Library
  * Copyright (c) 2015 ARM Limited
  *
@@ -20,7 +23,7 @@
 
 #if DEVICE_LOWPOWERTIMER
 
-#include "ticker_api.h"
+#include "hal/ticker_api.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -80,3 +83,5 @@ void lp_ticker_clear_interrupt(void);
 #endif
 
 #endif
+
+/** @}*/

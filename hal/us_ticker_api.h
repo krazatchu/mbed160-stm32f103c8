@@ -1,3 +1,6 @@
+
+/** \addtogroup hal */
+/** @{*/
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2015 ARM Limited
  *
@@ -17,7 +20,7 @@
 #define MBED_US_TICKER_API_H
 
 #include <stdint.h>
-#include "ticker_api.h"
+#include "hal/ticker_api.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,3 +79,5 @@ void us_ticker_clear_interrupt(void);
 #endif
 
 #endif
+
+/** @}*/

@@ -1,3 +1,6 @@
+
+/** \addtogroup hal */
+/** @{*/
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2015 ARM Limited
  *
@@ -17,10 +20,10 @@
 #define MBED_I2C_API_H
 
 #include "device.h"
-#include "buffer.h"
+#include "hal/buffer.h"
 
 #if DEVICE_I2C_ASYNCH
-#include "dma_api.h"
+#include "hal/dma_api.h"
 #endif
 
 #if DEVICE_I2C
@@ -239,3 +242,5 @@ void i2c_abort_asynch(i2c_t *obj);
 #endif
 
 #endif
+
+/** @}*/
