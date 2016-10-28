@@ -1,3 +1,6 @@
+
+/** \addtogroup hal */
+/** @{*/
 /* mbed Microcontroller Library
  * Copyright (c) 2006-2013 ARM Limited
  *
@@ -17,8 +20,8 @@
 #define MBED_SPI_API_H
 
 #include "device.h"
-#include "dma_api.h"
-#include "buffer.h"
+#include "hal/dma_api.h"
+#include "hal/buffer.h"
 
 #if DEVICE_SPI
 
@@ -212,3 +215,5 @@ void spi_abort_asynch(spi_t *obj);
 #endif // SPI_DEVICE
 
 #endif // MBED_SPI_API_H
+
+/** @}*/
