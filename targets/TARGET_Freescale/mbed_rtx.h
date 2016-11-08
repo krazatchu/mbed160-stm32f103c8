@@ -47,7 +47,7 @@
 #define OS_CLOCK                96000000
 #endif
 
-#elif defined(TARGET_K22F)
+#elif defined(TARGET_MCU_K22F)
 
 #ifndef INITIAL_SP
 #define INITIAL_SP              (0x20010000UL)
@@ -192,6 +192,36 @@
 #define ISR_STACK_SIZE          (0x1000)
 #endif
 
+#ifndef OS_TASKCNT
+#define OS_TASKCNT              14
+#endif
+#ifndef OS_MAINSTKSIZE
+#define OS_MAINSTKSIZE          256
+#endif
+#ifndef OS_CLOCK
+#define OS_CLOCK                120000000
+#endif
+
+#elif defined(TARGET_KW24D)
+
+#ifndef INITIAL_SP
+#define INITIAL_SP              (0x20008000UL)
+#endif
+#ifndef OS_TASKCNT
+#define OS_TASKCNT              14
+#endif
+#ifndef OS_MAINSTKSIZE
+#define OS_MAINSTKSIZE          256
+#endif
+#ifndef OS_CLOCK
+#define OS_CLOCK                48000000
+#endif
+
+#elif defined(TARGET_K82F)
+
+#ifndef INITIAL_SP
+#define INITIAL_SP              (0x20030000UL)
+#endif
 #ifndef OS_TASKCNT
 #define OS_TASKCNT              14
 #endif
