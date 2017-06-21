@@ -141,11 +141,13 @@ static void master_event_handler(uint8_t spi_idx,
 
     if (p_event->type == NRF_DRV_SPI_EVENT_DONE) {
         p_spi_info->flag.busy = false;
+#if DEVICE_SPI_ASYNCH
         if (p_spi_info->handler) {
             void (*handler)(void) = (void (*)(void))p_spi_info->handler;
             p_spi_info->handler = 0;
             handler();
         }
+#endif
     }
 }
 #define MASTER_EVENT_HANDLER(idx) \
@@ -483,6 +485,20 @@ int spi_master_write(spi_t *obj, int value)
     }
 
     return p_spi_info->rx_buf;
+}
+
+int spi_master_block_write(spi_t *obj, const char *tx_buffer, int tx_length, char *rx_buffer, int rx_length) {
+    int total = (tx_length > rx_length) ? tx_length : rx_length;
+
+    for (int i = 0; i < total; i++) {
+        char out = (i < tx_length) ? tx_buffer[i] : 0xff;
+        char in = spi_master_write(obj, out);
+        if (i < rx_length) {
+            rx_buffer[i] = in;
+        }
+    }
+
+    return total;
 }
 
 int spi_slave_receive(spi_t *obj)
