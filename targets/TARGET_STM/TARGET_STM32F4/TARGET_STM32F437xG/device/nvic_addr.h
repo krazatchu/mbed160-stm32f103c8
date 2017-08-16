@@ -1,5 +1,5 @@
 /* mbed Microcontroller Library
- * Copyright (c) 2016 ARM Limited
+ * Copyright (c) 2017-2017 ARM Limited
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,43 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
-
-#include "cmsis.h"
-#include "PortNames.h"
-#include "PeripheralNames.h"
-#include "PinNames.h"
+#ifndef NVIC_ADDR_H
+#define NVIC_ADDR_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct gpio_irq_s {
-    IRQn_Type irq_n;
-    uint32_t irq_index;
-    uint32_t event;
-    PinName pin;
-};
-
-struct port_s {
-    PortName port;
-    uint32_t mask;
-    PinDirection direction;
-    __IO uint32_t *reg_in;
-    __IO uint32_t *reg_out;
-};
-
-struct can_s {
-    CANName can;
-    int index;
-};
-
-struct trng_s {
-    RNG_HandleTypeDef handle;
-};
-
-#include "common_objects.h"
+#if defined(__ICCARM__)
+    #pragma section=".intvec"
+    #define NVIC_FLASH_VECTOR_ADDRESS   ((uint32_t)__section_begin(".intvec"))
+#elif defined(__CC_ARM)
+    extern uint32_t Load$$LR$$LR_IROM1$$Base[];
+    #define NVIC_FLASH_VECTOR_ADDRESS   ((uint32_t)Load$$LR$$LR_IROM1$$Base)
+#elif defined(__GNUC__)
+    extern uint32_t g_pfnVectors[];
+    #define NVIC_FLASH_VECTOR_ADDRESS   ((uint32_t)g_pfnVectors)
+#else
+    #error "Flash vector address not set for this toolchain"
+#endif
 
 #ifdef __cplusplus
 }
