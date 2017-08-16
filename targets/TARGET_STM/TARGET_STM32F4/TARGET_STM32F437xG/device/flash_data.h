@@ -1,6 +1,6 @@
 /* mbed Microcontroller Library
  *******************************************************************************
- * Copyright (c) 2014, STMicroelectronics
+ * Copyright (c) 2016, STMicroelectronics
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,46 +27,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *******************************************************************************
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
+#ifndef MBED_FLASH_DATA_H
+#define MBED_FLASH_DATA_H
 
-#include "cmsis.h"
-#include "PortNames.h"
-#include "PeripheralNames.h"
-#include "PinNames.h"
+#include "device.h"
+#include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
+#if DEVICE_FLASH
+
+#if defined (STM32F427xx) || defined (STM32F437xx)
+#define FLASH_SIZE      (uint32_t) 0x100000
 #endif
+ 
+/* Exported types ------------------------------------------------------------*/
+/* Exported constants --------------------------------------------------------*/
+/* Exported macro ------------------------------------------------------------*/
+/* Base address of the Flash sectors */
+#define ADDR_FLASH_SECTOR_0     ((uint32_t)0x08000000) /* Base @ of Sector 0, 16 Kbytes */
+#define ADDR_FLASH_SECTOR_1     ((uint32_t)0x08004000) /* Base @ of Sector 1, 16 Kbytes */
+#define ADDR_FLASH_SECTOR_2     ((uint32_t)0x08008000) /* Base @ of Sector 2, 16 Kbytes */
+#define ADDR_FLASH_SECTOR_3     ((uint32_t)0x0800C000) /* Base @ of Sector 3, 16 Kbytes */
+#define ADDR_FLASH_SECTOR_4     ((uint32_t)0x08010000) /* Base @ of Sector 4, 64 Kbytes */
+#define ADDR_FLASH_SECTOR_5     ((uint32_t)0x08020000) /* Base @ of Sector 5, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_6     ((uint32_t)0x08040000) /* Base @ of Sector 6, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_7     ((uint32_t)0x08060000) /* Base @ of Sector 7, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_8     ((uint32_t)0x08080000) /* Base @ of Sector 8, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_9     ((uint32_t)0x080A0000) /* Base @ of Sector 9, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_10    ((uint32_t)0x080C0000) /* Base @ of Sector 10, 128 Kbytes */
+#define ADDR_FLASH_SECTOR_11    ((uint32_t)0x080E0000) /* Base @ of Sector 11, 128 Kbytes */
 
-struct gpio_irq_s {
-    IRQn_Type irq_n;
-    uint32_t irq_index;
-    uint32_t event;
-    PinName pin;
-};
-
-struct port_s {
-    PortName port;
-    uint32_t mask;
-    PinDirection direction;
-    __IO uint32_t *reg_in;
-    __IO uint32_t *reg_out;
-};
-
-struct can_s {
-    CANName can;
-    int index;
-};
-
-struct trng_s {
-    RNG_HandleTypeDef handle;
-};
-
-#include "common_objects.h"
-
-#ifdef __cplusplus
-}
 #endif
-
 #endif
