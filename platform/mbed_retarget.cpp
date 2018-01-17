@@ -27,6 +27,8 @@
 #include "platform/mbed_stats.h"
 #include "platform/mbed_critical.h"
 #include "platform/PlatformMutex.h"
+#include "us_ticker_api.h"
+#include "lp_ticker_api.h"
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
@@ -61,7 +63,6 @@ static SingletonPtr<PlatformMutex> _mutex;
 #   define STDERR_FILENO    2
 
 #else
-#   include <sys/stat.h>
 #   include <sys/syslimits.h>
 #   define PREFIX(x)    x
 #endif
@@ -350,7 +351,9 @@ extern "C" void PREFIX(_exit)(int return_code) {
 }
 
 extern "C" void _ttywrch(int ch) {
+#if DEVICE_SERIAL
     serial_putc(&stdio_uart, ch);
+#endif
 }
 #endif
 
@@ -738,6 +741,7 @@ extern "C" int errno;
 
 // Dynamic memory allocation related syscall.
 #if defined(TARGET_NUVOTON)
+
 // Overwrite _sbrk() to support two region model (heap and stack are two distinct regions).
 // __wrap__sbrk() is implemented in:
 // TARGET_NUMAKER_PFM_NUC472    targets/TARGET_NUVOTON/TARGET_NUC472/TARGET_NUMAKER_PFM_NUC472/TOOLCHAIN_GCC_ARM/nuc472_retarget.c
@@ -976,6 +980,10 @@ extern "C" void __env_unlock( struct _reent *_r )
     __rtos_env_unlock(_r);
 }
 
+#endif
+
+#if defined (__GNUC__) || defined(__CC_ARM) || (defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050))
+
 #define CXA_GUARD_INIT_DONE             (1 << 0)
 #define CXA_GUARD_INIT_IN_PROGRESS      (1 << 1)
 #define CXA_GUARD_MASK                  (CXA_GUARD_INIT_DONE | CXA_GUARD_INIT_IN_PROGRESS)
@@ -1044,15 +1052,11 @@ void *operator new[](std::size_t count, const std::nothrow_t& tag)
 
 void operator delete(void *ptr)
 {
-    if (ptr != NULL) {
-        free(ptr);
-    }
+    free(ptr);
 }
 void operator delete[](void *ptr)
 {
-    if (ptr != NULL) {
-        free(ptr);
-    }
+    free(ptr);
 }
 
 /* @brief   standard c library clock() function.
@@ -1072,4 +1076,24 @@ extern "C" clock_t clock()
     t /= 1000000 / CLOCKS_PER_SEC; // convert to processor time
     _mutex->unlock();
     return t;
+}
+
+// temporary - Default to 1MHz at 32 bits if target does not have us_ticker_get_info
+MBED_WEAK const ticker_info_t* us_ticker_get_info()
+{
+    static const ticker_info_t info = {
+        1000000,
+        32
+    };
+    return &info;
+}
+
+// temporary - Default to 1MHz at 32 bits if target does not have lp_ticker_get_info
+MBED_WEAK const ticker_info_t* lp_ticker_get_info()
+{
+    static const ticker_info_t info = {
+        1000000,
+        32
+    };
+    return &info;
 }
