@@ -38,10 +38,14 @@ serial_t stdio_uart;
 extern UART_HandleTypeDef uart_handlers[];
 extern uint32_t serial_irq_ids[];
 
+// Utility functions
+HAL_StatusTypeDef init_uart(serial_t *obj);
+int8_t get_uart_index(UARTName uart_name);
+
 void serial_init(serial_t *obj, PinName tx, PinName rx)
 {
     struct serial_s *obj_s = SERIAL_S(obj);
-    int IndexNumber = 0;
+    uint8_t stdio_config = 0;
 
     // Determine the UART to use (UART_1, UART_2, ...)
     UARTName uart_tx = (UARTName)pinmap_peripheral(tx, PinMap_UART_TX);
@@ -51,15 +55,22 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
     obj_s->uart = (UARTName)pinmap_merge(uart_tx, uart_rx);
     MBED_ASSERT(obj_s->uart != (UARTName)NC);
 
-    // Enable USART clock
+    if ((tx == STDIO_UART_TX) || (rx == STDIO_UART_RX)) {
+        stdio_config = 1;
+    }
+    else {
+        if (uart_tx == pinmap_peripheral(STDIO_UART_TX, PinMap_UART_TX)) {
+            error("Error: new serial object is using same UART as STDIO");
+        }
+    }
+
+    // Reset and enable clock
 #if defined(USART1_BASE)
     if (obj_s->uart == UART_1) {
         __HAL_RCC_USART1_FORCE_RESET();
         __HAL_RCC_USART1_RELEASE_RESET();
         __HAL_RCC_USART1_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined (USART2_BASE)
@@ -67,9 +78,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_USART2_FORCE_RESET();
         __HAL_RCC_USART2_RELEASE_RESET();
         __HAL_RCC_USART2_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(USART3_BASE)
@@ -77,9 +86,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_USART3_FORCE_RESET();
         __HAL_RCC_USART3_RELEASE_RESET();
         __HAL_RCC_USART3_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(UART4_BASE)
@@ -87,9 +94,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_UART4_FORCE_RESET();
         __HAL_RCC_UART4_RELEASE_RESET();
         __HAL_RCC_UART4_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(USART4_BASE)
@@ -97,9 +102,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_USART4_FORCE_RESET();
         __HAL_RCC_USART4_RELEASE_RESET();
         __HAL_RCC_USART4_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(UART5_BASE)
@@ -107,9 +110,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_UART5_FORCE_RESET();
         __HAL_RCC_UART5_RELEASE_RESET();
         __HAL_RCC_UART5_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(USART5_BASE)
@@ -117,9 +118,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_USART5_FORCE_RESET();
         __HAL_RCC_USART5_RELEASE_RESET();
         __HAL_RCC_USART5_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(USART6_BASE)
@@ -127,9 +126,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_USART6_FORCE_RESET();
         __HAL_RCC_USART6_RELEASE_RESET();
         __HAL_RCC_USART6_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(UART7_BASE)
@@ -137,9 +134,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_UART7_FORCE_RESET();
         __HAL_RCC_UART7_RELEASE_RESET();
         __HAL_RCC_UART7_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(USART7_BASE)
@@ -147,9 +142,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_USART7_FORCE_RESET();
         __HAL_RCC_USART7_RELEASE_RESET();
         __HAL_RCC_USART7_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(UART8_BASE)
@@ -157,9 +150,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_UART8_FORCE_RESET();
         __HAL_RCC_UART8_RELEASE_RESET();
         __HAL_RCC_UART8_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(USART8_BASE)
@@ -167,9 +158,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_USART8_FORCE_RESET();
         __HAL_RCC_USART8_RELEASE_RESET();
         __HAL_RCC_USART8_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(UART9_BASE)
@@ -177,9 +166,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_UART9_FORCE_RESET();
         __HAL_RCC_UART9_RELEASE_RESET();
         __HAL_RCC_UART9_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
 
 #if defined(UART10_BASE)
@@ -187,21 +174,20 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
         __HAL_RCC_UART10_FORCE_RESET();
         __HAL_RCC_UART10_RELEASE_RESET();
         __HAL_RCC_UART10_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
-
 
 #if defined(LPUART1_BASE)
     if (obj_s->uart == LPUART_1) {
         __HAL_RCC_LPUART1_FORCE_RESET();
         __HAL_RCC_LPUART1_RELEASE_RESET();
         __HAL_RCC_LPUART1_CLK_ENABLE();
-        obj_s->index = IndexNumber;
     }
-    IndexNumber++;
 #endif
+
+    // Assign serial object index
+    obj_s->index = get_uart_index(obj_s->uart);
+    MBED_ASSERT(obj_s->index >= 0);
 
     // Configure UART pins
     pinmap_pinout(tx, PinMap_UART_TX);
@@ -216,7 +202,7 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
 
     // Configure UART
     obj_s->baudrate = 9600; // baudrate default value
-    if (obj_s->uart == STDIO_UART) {
+    if (stdio_config) {
 #if MBED_CONF_PLATFORM_STDIO_BAUD_RATE
         obj_s->baudrate = MBED_CONF_PLATFORM_STDIO_BAUD_RATE; // baudrate takes value from platform/mbed_lib.json
 #endif /* MBED_CONF_PLATFORM_STDIO_BAUD_RATE */
@@ -239,8 +225,8 @@ void serial_init(serial_t *obj, PinName tx, PinName rx)
 
     init_uart(obj); /* init_uart will be called again in serial_baud function, so don't worry if init_uart returns HAL_ERROR */
 
-    // For stdio management
-    if (obj_s->uart == STDIO_UART) { // STDIO_UART defined in PeripheralNames.h
+    // For stdio management in platform/mbed_board.c and platform/mbed_retarget.cpp
+    if (stdio_config) {
         stdio_uart_inited = 1;
         memcpy(&stdio_uart, obj, sizeof(serial_t));
     }
@@ -413,38 +399,6 @@ void serial_baud(serial_t *obj, int baudrate)
     }
 }
 
-HAL_StatusTypeDef init_uart(serial_t *obj)
-{
-    struct serial_s *obj_s = SERIAL_S(obj);
-    UART_HandleTypeDef *huart = &uart_handlers[obj_s->index];
-    huart->Instance = (USART_TypeDef *)(obj_s->uart);
-
-    huart->Init.BaudRate     = obj_s->baudrate;
-    huart->Init.WordLength   = obj_s->databits;
-    huart->Init.StopBits     = obj_s->stopbits;
-    huart->Init.Parity       = obj_s->parity;
-#if DEVICE_SERIAL_FC
-    huart->Init.HwFlowCtl    = obj_s->hw_flow_ctl;
-#else
-    huart->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-#endif
-    huart->Init.OverSampling = UART_OVERSAMPLING_16;
-    huart->TxXferCount       = 0;
-    huart->TxXferSize        = 0;
-    huart->RxXferCount       = 0;
-    huart->RxXferSize        = 0;
-
-    if (obj_s->pin_rx == NC) {
-        huart->Init.Mode = UART_MODE_TX;
-    } else if (obj_s->pin_tx == NC) {
-        huart->Init.Mode = UART_MODE_RX;
-    } else {
-        huart->Init.Mode = UART_MODE_TX_RX;
-    }
-
-    return HAL_UART_Init(huart);
-}
-
 void serial_format(serial_t *obj, int data_bits, SerialParity parity, int stop_bits)
 {
     struct serial_s *obj_s = SERIAL_S(obj);
@@ -464,11 +418,17 @@ void serial_format(serial_t *obj, int data_bits, SerialParity parity, int stop_b
     }
 
     switch (data_bits) {
-        case 9:
-            MBED_ASSERT(parity == UART_PARITY_NONE);
-            obj_s->databits = UART_WORDLENGTH_9B;
+        case 7:
+            if (parity != UART_PARITY_NONE) {
+                obj_s->databits = UART_WORDLENGTH_8B;
+            } else {
+#if defined UART_WORDLENGTH_7B
+                obj_s->databits = UART_WORDLENGTH_7B;
+#else
+                error("7-bit data format without parity is not supported");
+#endif
+            }
             break;
-        default:
         case 8:
             if (parity != UART_PARITY_NONE) {
                 obj_s->databits = UART_WORDLENGTH_9B;
@@ -476,15 +436,16 @@ void serial_format(serial_t *obj, int data_bits, SerialParity parity, int stop_b
                 obj_s->databits = UART_WORDLENGTH_8B;
             }
             break;
-#if defined UART_WORDLENGTH_7B
-        case 7:
+        case 9:
             if (parity != UART_PARITY_NONE) {
-                obj_s->databits = UART_WORDLENGTH_8B;
+                error("Parity is not supported with 9-bit data format");
             } else {
-                obj_s->databits = UART_WORDLENGTH_7B;
+                obj_s->databits = UART_WORDLENGTH_9B;
             }
             break;
-#endif
+        default:
+            error("Only 7, 8 or 9-bit data formats are supported");
+            break;
     }
 
     if (stop_bits == 2) {
@@ -531,6 +492,154 @@ void serial_pinout_tx(PinName tx)
 void serial_break_clear(serial_t *obj)
 {
     (void)obj;
+}
+
+/******************************************************************************
+ * UTILITY FUNCTIONS
+ ******************************************************************************/
+
+HAL_StatusTypeDef init_uart(serial_t *obj)
+{
+    struct serial_s *obj_s = SERIAL_S(obj);
+    UART_HandleTypeDef *huart = &uart_handlers[obj_s->index];
+    huart->Instance = (USART_TypeDef *)(obj_s->uart);
+
+    huart->Init.BaudRate     = obj_s->baudrate;
+    huart->Init.WordLength   = obj_s->databits;
+    huart->Init.StopBits     = obj_s->stopbits;
+    huart->Init.Parity       = obj_s->parity;
+#if DEVICE_SERIAL_FC
+    huart->Init.HwFlowCtl    = obj_s->hw_flow_ctl;
+#else
+    huart->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+#endif
+    huart->Init.OverSampling = UART_OVERSAMPLING_16;
+    huart->TxXferCount       = 0;
+    huart->TxXferSize        = 0;
+    huart->RxXferCount       = 0;
+    huart->RxXferSize        = 0;
+
+    if (obj_s->pin_rx == NC) {
+        huart->Init.Mode = UART_MODE_TX;
+    } else if (obj_s->pin_tx == NC) {
+        huart->Init.Mode = UART_MODE_RX;
+    } else {
+        huart->Init.Mode = UART_MODE_TX_RX;
+    }
+
+    return HAL_UART_Init(huart);
+}
+
+int8_t get_uart_index(UARTName uart_name)
+{
+    uint8_t index = 0;
+
+#if defined(USART1_BASE)
+    if (uart_name == UART_1) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(USART2_BASE)
+    if (uart_name == UART_2) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(USART3_BASE)
+    if (uart_name == UART_3) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(UART4_BASE)
+    if (uart_name == UART_4) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(USART4_BASE)
+    if (uart_name == UART_4) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(UART5_BASE)
+    if (uart_name == UART_5) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(USART5_BASE)
+    if (uart_name == UART_5) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(USART6_BASE)
+    if (uart_name == UART_6) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(UART7_BASE)
+    if (uart_name == UART_7) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(USART7_BASE)
+    if (uart_name == UART_7) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(UART8_BASE)
+    if (uart_name == UART_8) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(USART8_BASE)
+    if (uart_name == UART_8) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(UART9_BASE)
+    if (uart_name == UART_9) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(UART10_BASE)
+    if (uart_name == UART_10) {
+        return index;
+    }
+    index++;
+#endif
+
+#if defined(LPUART1_BASE)
+    if (uart_name == LPUART_1) {
+        return index;
+    }
+    index++;
+#endif
+
+    return -1;
 }
 
 #endif /* DEVICE_SERIAL */
